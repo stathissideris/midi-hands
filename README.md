@@ -33,8 +33,15 @@ Press `q` in the preview window to quit.
 | Right hand                       | Channel 2                               |
 | Wrist height (Y)                 | CC 1 (mod wheel) — hand up = higher     |
 | Thumb–index pinch distance       | CC 11 (expression) — closed = 0         |
+| Right thumb → index touch        | Note on/off C4 (60)                     |
+| Right thumb → middle touch       | Note on/off E4 (64)                     |
+| Right thumb → ring touch         | Note on/off G4 (67)                     |
+| Right thumb → pinky touch        | Note on/off A4 (69)                     |
 
-Unchanged values are not re-sent, so the bus stays quiet when you hold still.
+Unchanged CC values are not re-sent, so the bus stays quiet when you hold still.
+Note triggering uses hysteresis (separate on/off thresholds) so a steady touch
+won't chatter, and an `all-notes-off` is sent if the right hand leaves the
+frame to prevent stuck notes.
 
 ## Repository layout
 
@@ -46,6 +53,7 @@ concept at a time.
 |---------------|-------------------------------------------------------------|
 | `step-01.py`  | MediaPipe hand detection on the webcam, drawing landmarks   |
 | `step-02.py`  | Adds a virtual MIDI port and sends CCs from the wrist       |
+| `step-03.py`  | Note on/off from finger taps on the right hand, with a state machine and hysteresis thresholds |
 | `…`           | Further refinements (smoothing, more gestures, …)           |
 | `main.py`     | The final, presentable version                              |
 
