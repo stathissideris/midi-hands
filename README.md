@@ -7,6 +7,27 @@ Landmarker, OpenCV for video capture, and [`mido`](https://mido.readthedocs.io/)
 for MIDI output. The script opens a virtual MIDI port that any DAW (Logic,
 Ableton, Reaper, VCV Rack, …) will see immediately — no IAC bus setup required.
 
+## How it works
+
+```mermaid
+flowchart LR
+    hands["Your hands"] -->|move| webcam["Webcam"]
+    webcam -->|frames| opencv["OpenCV"]
+    opencv -->|RGB image| mediapipe["MediaPipe"]
+    mediapipe -->|21 landmarks| math["Math"]
+    math -->|CC &amp; note events| mido["mido"]
+    mido -->|MIDI messages| daw["Your DAW"]
+    daw -->|sound| speakers["Speakers"]
+    speakers -->|sound waves| ears["Your ears"]
+```
+
+Each frame from the webcam is read by OpenCV and handed to MediaPipe, which
+returns the 3D position of 21 points per hand (wrist, knuckles, fingertips).  A
+bit of math turns those positions into useful musical signals — wrist height
+becomes a CC value, the thumb-to-finger distance becomes another, and finger-tap
+detection becomes note on/off messages. `mido` sends those out over a virtual
+MIDI port your DAW listens to.
+
 ## Setup
 
 This project is a small Python program. You don't need to know anything about
@@ -175,9 +196,8 @@ window to quit.
 | Right thumb → pinky touch        | Note on/off A4 (69)                     |
 
 Unchanged CC values are not re-sent, so the bus stays quiet when you hold still.
-Note triggering uses hysteresis (separate on/off thresholds) so a steady touch
-won't chatter, and an `all-notes-off` is sent if the right hand leaves the
-frame to prevent stuck notes.
+An `all-notes-off` is sent if the right hand leaves the frame to prevent stuck
+notes.
 
 ## Repository layout
 
@@ -189,14 +209,7 @@ concept at a time.
 |---------------|-------------------------------------------------------------|
 | `step-01.py`  | MediaPipe hand detection on the webcam, drawing landmarks   |
 | `step-02.py`  | Adds a virtual MIDI port and sends CCs from the wrist       |
-| `step-03.py`  | Note on/off from finger taps on the right hand, with a state machine and hysteresis thresholds |
+| `step-03.py`  | Note on/off from finger taps on the right hand, with a state machine |
 | `main.py`     | The final, presentable version                              |
 
 The step files are standalone — each one runs on its own with `uv run step-XX.py`.
-
-## Files
-
-- `main.py` — the finished script
-- `step-XX.py` — incremental teaching steps
-- `download-models.sh` / `download-models.ps1` — fetch the `hand_landmarker.task` bundle (Mac/Linux and Windows respectively)
-- `hand_landmarker.task` — MediaPipe model bundle (gitignored, downloaded on demand)
