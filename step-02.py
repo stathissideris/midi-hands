@@ -211,6 +211,28 @@ class CCSender:
         self.port.send(mido.Message("control_change", channel=channel, control=cc, value=value))
 
 
+def open_midi_port(name):
+    try:
+        port = mido.open_output(name, virtual=True)
+        print(f"Opened virtual MIDI port: {name}")
+        return port
+    except (NotImplementedError, RuntimeError):
+        pass
+
+    available = mido.get_output_names()
+    # first port whose name contains midi-hands, or None if there isn't one.
+    match = next((n for n in available if name.lower() in n.lower()), None)
+    if match is None:
+        raise RuntimeError(
+            f"Could not open virtual MIDI port '{name}'. On Windows, install a "
+            f"loopback driver (e.g. loopMIDI) and create a port named '{name}', "
+            f"then re-run. Available ports: {available}"
+        )
+    port = mido.open_output(match)
+    print(f"Opened existing MIDI port: {match}")
+    return port
+
+
 def main():
     base = mp_python.BaseOptions(model_asset_path=str(MODEL_PATH))
     options = vision.HandLandmarkerOptions(
@@ -225,8 +247,7 @@ def main():
     if not cap.isOpened():
         raise RuntimeError("Could not open webcam")
 
-    port = mido.open_output(PORT_NAME, virtual=True)
-    print(f"Opened virtual MIDI port: {PORT_NAME}")
+    port = open_midi_port(PORT_NAME)
     sender = CCSender(port)
 
     with vision.HandLandmarker.create_from_options(options) as landmarker:
