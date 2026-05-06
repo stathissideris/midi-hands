@@ -9,21 +9,157 @@ Ableton, Reaper, VCV Rack, …) will see immediately — no IAC bus setup requir
 
 ## Setup
 
-Requires [`uv`](https://github.com/astral-sh/uv) and Python 3.12.
+This project is a small Python program. You don't need to know anything about
+Python — a tool called [`uv`](https://github.com/astral-sh/uv) handles
+installing Python and all the libraries for you. Pick the section below that
+matches your operating system and follow it once. After that, jump to
+[Run](#run).
 
-```sh
-uv sync                 # install dependencies
-./download-models.sh    # fetch the MediaPipe hand_landmarker.task model
-```
+### Mac
+
+1. **Open the Terminal.** Press `Cmd`+`Space`, type `Terminal`, press Enter.
+   A window with a text prompt will open. You'll be typing commands here. To
+   "run" a command, copy it, paste it into Terminal, and press Enter.
+
+2. **Install `uv`.** Paste this command and press Enter:
+
+   ```sh
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+   When it finishes, **close the Terminal window and open a new one** so the
+   change takes effect.
+
+3. **Download the project.** On
+   [the GitHub page](https://github.com/) for this repo, click the green
+   **Code** button and choose **Download ZIP**. Unzip the file (double-click
+   it). You'll get a folder called `midi-hands-master` (or similar). Move it
+   somewhere you'll remember, like your Desktop.
+
+4. **Go into the project folder in the Terminal.** Type `cd ` (with a space),
+   then drag the project folder from Finder onto the Terminal window — its
+   path will be filled in for you. Press Enter.
+
+5. **Install everything.** Run these two commands one at a time:
+
+   ```sh
+   uv sync
+   ./download-models.sh
+   ```
+
+   The first one downloads Python and the libraries the project needs. The
+   second one downloads the hand-detection model. Both are one-time steps.
+
+### Windows
+
+1. **Install loopMIDI** (a free tool that creates virtual MIDI cables, which
+   Windows doesn't have built in). Download it from
+   [tobias-erichsen.de/software/loopmidi.html](https://www.tobias-erichsen.de/software/loopmidi.html)
+   and run the installer. Open loopMIDI, type `midi-hands` in the box at the
+   bottom-left, and click the **+** button. Leave loopMIDI running in the
+   background whenever you use this project.
+
+2. **Open PowerShell.** Press the Windows key, type `PowerShell`, press Enter.
+   A blue window with a text prompt will open. You'll be typing commands
+   here. To "run" a command, copy it, paste it in (right-click pastes), and
+   press Enter.
+
+3. **Install `uv`.** Paste this command and press Enter:
+
+   ```powershell
+   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+   ```
+
+   When it finishes, **close the PowerShell window and open a new one** so
+   the change takes effect.
+
+4. **Download the project.** On
+   [the GitHub page](https://github.com/) for this repo, click the green
+   **Code** button and choose **Download ZIP**. Right-click the downloaded
+   file and choose **Extract All…**. Move the resulting folder somewhere
+   you'll remember, like your Desktop.
+
+5. **Go into the project folder in PowerShell.** Type `cd ` (with a space),
+   then drag the project folder from File Explorer onto the PowerShell
+   window — its path will be filled in for you. Press Enter.
+
+6. **Install everything.** Run these commands one at a time:
+
+   ```powershell
+   uv sync
+   .\download-models.ps1
+   ```
+
+   The first one downloads Python and the libraries the project needs. The
+   second one downloads the hand-detection model. Both are one-time steps.
+
+   If PowerShell refuses to run `.\download-models.ps1` with a message about
+   scripts being disabled, run this once and try again:
+
+   ```powershell
+   Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+   ```
+
+### Linux
+
+1. **Open a terminal.** On most distributions you can press `Ctrl`+`Alt`+`T`,
+   or find "Terminal" in your applications menu.
+
+2. **Install `uv`.** Paste this command and press Enter:
+
+   ```sh
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+   When it finishes, **close the terminal and open a new one** so the change
+   takes effect.
+
+3. **Download the project.** On
+   [the GitHub page](https://github.com/) for this repo, click the green
+   **Code** button and choose **Download ZIP**. Extract the archive (your
+   file manager can usually do this with a right-click) and move the folder
+   somewhere you'll remember, like your home directory.
+
+4. **Go into the project folder in the terminal.** Use `cd` followed by the
+   path, e.g.:
+
+   ```sh
+   cd ~/midi-hands-master
+   ```
+
+5. **Install everything.** Run these two commands one at a time:
+
+   ```sh
+   uv sync
+   ./download-models.sh
+   ```
+
+   The first one downloads Python and the libraries the project needs. The
+   second one downloads the hand-detection model. Both are one-time steps.
+
+   You may also need a few system packages for the camera and MIDI to work
+   (most distributions already have them). On Debian/Ubuntu, for example:
+
+   ```sh
+   sudo apt install libgl1 libglib2.0-0 librtmidi-dev
+   ```
 
 ## Run
+
+Open a terminal (or PowerShell on Windows), navigate to the project folder
+the same way you did during setup, and run:
 
 ```sh
 uv run main.py
 ```
 
-Then, in your DAW, select **`midi-hands`** as a MIDI input on an armed track.
-Press `q` in the preview window to quit.
+A small window showing your webcam will open. Then, in your DAW, select
+**`midi-hands`** as a MIDI input on an armed track. Press `q` in the preview
+window to quit.
+
+> **Windows note:** make sure loopMIDI is running and has a port called
+> `midi-hands` (see step 1 of the Windows setup above), otherwise the script
+> won't be able to send MIDI.
 
 ### Default mappings
 
@@ -54,7 +190,6 @@ concept at a time.
 | `step-01.py`  | MediaPipe hand detection on the webcam, drawing landmarks   |
 | `step-02.py`  | Adds a virtual MIDI port and sends CCs from the wrist       |
 | `step-03.py`  | Note on/off from finger taps on the right hand, with a state machine and hysteresis thresholds |
-| `…`           | Further refinements (smoothing, more gestures, …)           |
 | `main.py`     | The final, presentable version                              |
 
 The step files are standalone — each one runs on its own with `uv run step-XX.py`.
@@ -63,5 +198,5 @@ The step files are standalone — each one runs on its own with `uv run step-XX.
 
 - `main.py` — the finished script
 - `step-XX.py` — incremental teaching steps
-- `download-models.sh` — fetches the `hand_landmarker.task` bundle
+- `download-models.sh` / `download-models.ps1` — fetch the `hand_landmarker.task` bundle (Mac/Linux and Windows respectively)
 - `hand_landmarker.task` — MediaPipe model bundle (gitignored, downloaded on demand)
