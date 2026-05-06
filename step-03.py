@@ -176,7 +176,7 @@ def main():
         running_mode=vision.RunningMode.VIDEO,
         num_hands=2,
         min_hand_detection_confidence=0.5,
-        min_tracking_confidence=0.5,
+        min_tracking_confidence=0.7,
     )
 
     cap = cv2.VideoCapture(0)
