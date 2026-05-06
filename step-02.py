@@ -268,8 +268,24 @@ def main():
                 draw(frame, result.hand_landmarks)
 
                 for landmarks, handed in zip(result.hand_landmarks, result.handedness):
-                    # Mediapipe reports handedness from the camera's POV; we flipped
-                    # the frame, so swap to match the user's actual hand.
+                    # result.handedness is a list parallel to result.hand_landmarks:
+                    # one entry per detected hand, in the same order. Each entry
+                    # is itself a list of Category objects ranked by confidence;
+                    # we only ever read [0], the top classification. A Category
+                    # has .category_name ("Left" or "Right"), .score (0..1
+                    # confidence), .index, and .display_name. Roughly:
+                    #
+                    #   [
+                    #       [Category(category_name="Left",  score=0.97, ...)],
+                    #       [Category(category_name="Right", score=0.93, ...)],
+                    #   ]
+                    #
+                    # Docs:
+                    # https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker
+                    #
+                    # Mediapipe reports handedness from the camera's POV; we
+                    # flipped the frame, so swap to match the user's actual
+                    # hand.
                     raw = handed[0].category_name
                     label = "Right" if raw == "Left" else "Left"
                     channel = CHANNEL_BY_HAND.get(label, 0)
