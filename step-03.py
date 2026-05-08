@@ -408,7 +408,7 @@ def main():
             if not right_seen:
                 trigger.all_off()
 
-            cv2.imshow("MediaPipe Hands - press q to quit", frame)
+            cv2.imshow("MIDI Hands - press q to quit", frame)
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
 

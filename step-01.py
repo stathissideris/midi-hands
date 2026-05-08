@@ -130,7 +130,7 @@ def main():
             if result.hand_landmarks:
                 draw(frame, result.hand_landmarks)
 
-            cv2.imshow("MediaPipe Hands - press q to quit", frame)
+            cv2.imshow("MIDI Hands - press q to quit", frame)
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
 

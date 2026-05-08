@@ -297,7 +297,7 @@ def main():
                     # ~0.02 = touching, ~0.25 = wide open
                     sender.send(channel, CC_PINCH, to_cc(pinch, 0.02, 0.25))
 
-            cv2.imshow("MediaPipe Hands - press q to quit", frame)
+            cv2.imshow("MIDI Hands - press q to quit", frame)
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
 
