@@ -207,6 +207,7 @@ concept at a time.
 
 | File          | What it adds                                                |
 |---------------|-------------------------------------------------------------|
+| `step-00.py`  | Bare OpenCV: open the webcam, draw a label, show the frames |
 | `step-01.py`  | MediaPipe hand detection on the webcam, drawing landmarks   |
 | `step-02.py`  | Adds a virtual MIDI port and sends CCs from the wrist       |
 | `step-03.py`  | Note on/off from finger taps on the right hand, with a state machine |
